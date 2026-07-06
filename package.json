@@ -1,0 +1,13 @@
+{
+  "name": "study-assistant-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev:frontend": "npm --prefix ai-study-assistant/frontend run dev -- --host 127.0.0.1 --port 5173",
+    "dev:backend": "cd ai-study-assistant/backend && python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000",
+    "build:frontend": "npm --prefix ai-study-assistant/frontend run build",
+    "install:frontend": "npm --prefix ai-study-assistant/frontend install",
+    "install:backend": "python -m pip install -r ai-study-assistant/backend/requirements.txt"
+  }
+}
+

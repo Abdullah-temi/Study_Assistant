@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api";
+const API_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000/api";
 
 export type AuthPayload = {
   access_token: string;
@@ -78,4 +78,3 @@ export async function uploadDocument(file: File) {
 
   return response.json() as Promise<{ id: string; filename: string; characters: number; status: string }>;
 }
-
