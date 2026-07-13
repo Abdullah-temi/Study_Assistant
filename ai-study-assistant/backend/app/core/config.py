@@ -1,18 +1,31 @@
-import os
-from dataclasses import dataclass
+from functools import lru_cache
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-@dataclass(frozen=True)
-class Settings:
-    app_name: str = "AI Study Assistant"
-    frontend_origin: str = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
-    jwt_secret: str = os.getenv("JWT_SECRET", "dev-secret")
-    database_url: str = os.getenv(
-        "DATABASE_URL",
-        "postgresql://postgres:postgres@localhost:5432/ai_study_assistant",
+class Settings(BaseSettings):
+    """Typed application configuration, loaded from environment variables / .env."""
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
     )
-    uploads_dir: str = os.getenv("UPLOADS_DIR", "../uploads")
+
+    app_name: str = "AI Study Assistant"
+    frontend_origin: str = "http://localhost:5173"
+    jwt_secret: str = "dev-secret"
+    database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/ai_study_assistant"
+    uploads_dir: str = "../uploads"
+    openai_api_key: str = ""
 
 
-settings = Settings()
+@lru_cache
+def get_settings() -> Settings:
+    """Cached settings instance so we parse the environment exactly once."""
+    return Settings()
 
+
+# Kept as a module-level singleton for backward-compatible `from app.core.config import settings`
+# imports throughout the codebase.
+settings = get_settings()
