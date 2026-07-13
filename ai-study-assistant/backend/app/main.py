@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from app.auth.router import router as auth_router
 from app.chat.router import router as chat_router
@@ -9,6 +11,7 @@ from app.quizzes.router import router as quizzes_router
 from app.summaries.router import router as summaries_router
 from app.users.router import router as users_router
 from app.core.config import settings
+from app.database.session import get_db
 
 
 app = FastAPI(
@@ -31,8 +34,18 @@ app.add_middleware(
 
 
 @app.get("/api/health", tags=["health"])
-def health_check() -> dict[str, str]:
-    return {"status": "ok", "service": "ai-study-assistant"}
+def health_check(db: Session = Depends(get_db)) -> dict[str, str]:
+    try:
+        db.execute(text("SELECT 1"))
+        database_status = "ok"
+    except Exception:
+        database_status = "error"
+
+    return {
+        "status": "ok",
+        "service": "ai-study-assistant",
+        "database": database_status,
+    }
 
 
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
